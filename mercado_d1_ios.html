@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mercado D1">
+<meta name="theme-color" content="#D32F1E">
+<title>Mercado D1</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23D32F1E'/><text y='.9em' font-size='80' x='10'>🛒</text></svg>">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --red:#D32F1E;--red-d:#A8241A;--red-l:#FDECEA;
+  --bg:#F7F4EF;--card:#FFFFFF;--surface:#EFECE6;
+  --text:#1C1917;--muted:#78716C;--faint:#A8A29E;
+  --border:rgba(0,0,0,0.09);--border2:rgba(0,0,0,0.16);
+  --green:#166534;--green-l:#DCFCE7;
+  --amber:#92400E;
+  --r:14px;--r2:20px;
+  --safe-bottom:env(safe-area-inset-bottom);
+  --safe-top:env(safe-area-inset-top);
+}
+
+html{height:100%;overflow-x:hidden}
+body{
+  font-family:-apple-system,'Helvetica Neue',sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100vh;font-size:16px;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  /* iOS scroll momentum */
+  -webkit-overflow-scrolling:touch;
+}
+
+/* ── HERO ── */
+.hero{
+  background:var(--red);
+  padding:calc(var(--safe-top) + 1.25rem) 1.25rem 1.5rem;
+  position:relative;overflow:hidden;
+}
+.hero::before{content:'';position:absolute;border-radius:50%;background:rgba(255,255,255,0.06);width:220px;height:220px;top:-90px;right:-60px}
+.hero::after{content:'';position:absolute;border-radius:50%;background:rgba(255,255,255,0.04);width:160px;height:160px;bottom:-60px;left:25%}
+.h-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);position:relative}
+.h-title{font-size:28px;font-weight:700;color:#fff;margin-top:3px;position:relative;letter-spacing:-0.5px}
+.h-title span{font-weight:300;font-style:italic}
+.h-sub{font-size:12px;color:rgba(255,255,255,.4);margin-top:2px;position:relative}
+
+/* BUDGET CARD inside hero */
+.budget{background:rgba(0,0,0,.22);border-radius:var(--r2);padding:14px 16px;margin-top:14px;position:relative}
+.b-row{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px}
+.b-amount{font-size:32px;font-weight:700;color:#fff;letter-spacing:-1px;line-height:1}
+.b-amount small{font-size:13px;font-weight:400;color:rgba(255,255,255,.5);display:block;letter-spacing:0;margin-bottom:2px}
+.b-limit{font-size:12px;color:rgba(255,255,255,.5);text-align:right}
+.b-limit strong{color:#fff;display:block;font-size:14px}
+.bar-bg{height:8px;background:rgba(255,255,255,.18);border-radius:99px;overflow:hidden}
+.bar{height:100%;border-radius:99px;background:#86EFAC;transition:width .4s ease,background .3s}
+.bar.warn{background:#FDE68A}
+.bar.over{background:#FCA5A5}
+.b-foot{display:flex;justify-content:space-between;margin-top:7px;font-size:12px;color:rgba(255,255,255,.4)}
+.b-rem{font-weight:600;color:#86EFAC}
+.b-rem.warn{color:#FDE68A}
+.b-rem.over{color:#FCA5A5}
+
+/* STATS ROW */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 14px 4px}
+.scard{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px}
+.scard-lbl{font-size:10px;color:var(--faint);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.scard-val{font-size:20px;font-weight:700;color:var(--text);line-height:1}
+.scard-sub{font-size:10px;color:var(--faint);margin-top:3px}
+
+/* ── BOTTOM NAV (iOS style) ── */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:rgba(247,244,239,.95);
+  -webkit-backdrop-filter:blur(20px);
+  backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  display:flex;
+  padding-bottom:calc(var(--safe-bottom) + 4px);
+}
+.nav-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  padding:8px 4px 6px;
+  border:none;background:transparent;
+  font-family:-apple-system,'Helvetica Neue',sans-serif;
+  font-size:10px;color:var(--faint);cursor:pointer;
+  transition:color .15s;
+  -webkit-user-select:none;user-select:none;
+}
+.nav-btn.active{color:var(--red)}
+.nav-icon{font-size:22px;margin-bottom:3px;display:block;line-height:1}
+.nav-label{font-size:10px;font-weight:500;letter-spacing:-.1px}
+/* active dot indicator */
+.nav-btn.active .nav-label::after{
+  content:'';display:block;width:4px;height:4px;border-radius:50%;
+  background:var(--red);margin:3px auto 0;
+}
+
+/* ── CONTENT AREA ── */
+.page{display:none;padding:12px 14px calc(var(--safe-bottom) + 90px);animation:fadeUp .2s ease}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── SECTION HEADER ── */
+.sec-head{display:flex;align-items:center;gap:8px;margin:16px 0 8px}
+.sec-ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.sec-name{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.sec-tot{margin-left:auto;font-size:14px;font-weight:700;color:var(--text)}
+
+/* ── ITEM CARD ── */
+.item{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  padding:14px 13px;margin-bottom:7px;
+  display:grid;grid-template-columns:44px 1fr auto auto;
+  align-items:center;gap:10px;
+  /* iOS touch feedback */
+  -webkit-user-select:none;user-select:none;
+  transition:opacity .2s;
+  will-change:opacity;
+}
+.item.done{opacity:.35}
+.item.done .iname{text-decoration:line-through;color:var(--faint)}
+
+/* Big touch target for checkbox */
+.chk{
+  width:40px;height:40px;border-radius:50%;
+  border:2px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  transition:all .18s;flex-shrink:0;background:transparent;
+  cursor:pointer;
+  /* iOS active state */
+  -webkit-tap-highlight-color:transparent;
+}
+.chk:active{transform:scale(.88)}
+.chk.on{background:var(--green);border-color:var(--green)}
+.chk.on::after{
+  content:'';width:8px;height:13px;
+  border:2.5px solid #fff;border-top:none;border-left:none;
+  transform:rotate(42deg) translateY(-2px);display:block;
+}
+.iname{font-size:15px;line-height:1.35;font-weight:400;color:var(--text)}
+.iprice{font-size:15px;font-weight:700;white-space:nowrap;color:var(--text)}
+.del-btn{
+  width:36px;height:36px;border:none;background:none;
+  color:var(--faint);font-size:20px;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;
+  -webkit-tap-highlight-color:transparent;
+}
+.del-btn:active{background:var(--red-l);color:var(--red)}
+
+/* ── ADD FORM ── */
+.add-card{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:16px;overflow:hidden}
+.add-card-title{font-size:16px;font-weight:700;color:var(--red);margin-bottom:14px}
+.frow{display:grid;grid-template-columns:1fr 100px;gap:8px;margin-bottom:8px}
+.frow2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.fld label{display:block;font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+/* iOS-friendly inputs – 16px prevents zoom */
+.fld input,.fld select{
+  width:100%;padding:12px 13px;
+  border-radius:11px;border:1px solid var(--border2);
+  background:var(--surface);
+  font-size:16px;color:var(--text);
+  -webkit-appearance:none;appearance:none;
+  outline:none;
+  transition:border-color .15s;
+}
+.fld input:focus,.fld select:focus{border-color:var(--red)}
+.fld select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A8A29E' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.abtn{
+  width:100%;padding:14px;border-radius:12px;
+  background:var(--red);color:#fff;
+  font-size:16px;font-weight:700;border:none;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  transition:background .15s;
+  -webkit-user-select:none;
+}
+.abtn:active{background:var(--red-d)}
+
+/* ── CALCULADORA ── */
+.calc-display{
+  background:var(--surface);border-radius:var(--r);
+  padding:16px;margin-bottom:14px;
+}
+.cd-lbl{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.cd-total{font-size:44px;font-weight:700;color:var(--text);letter-spacing:-2px;line-height:1}
+.cd-row{display:flex;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.cd-item{font-size:11px;color:var(--muted)}
+.cd-item strong{display:block;font-size:15px;font-weight:700;margin-top:2px;color:var(--text)}
+.cd-item.rem strong{color:var(--green)}
+.cd-item.rem strong.warn{color:var(--amber)}
+.cd-item.rem strong.over{color:var(--red)}
+
+/* Calc name input */
+.calc-name{
+  width:100%;padding:12px 13px;border-radius:11px;
+  border:1px solid var(--border2);background:var(--surface);
+  font-size:16px;color:var(--text);outline:none;
+  -webkit-appearance:none;margin-bottom:8px;
+  transition:border-color .15s;
+}
+.calc-name:focus{border-color:var(--red)}
+
+.calc-row{display:flex;gap:8px;margin-bottom:12px}
+.calc-input{
+  flex:1;padding:14px;border-radius:12px;
+  border:2px solid var(--border2);
+  font-size:22px;font-weight:700;color:var(--text);
+  background:var(--card);
+  -webkit-appearance:none;appearance:none;
+  outline:none;text-align:center;
+  transition:border-color .15s;
+}
+.calc-input:focus{border-color:var(--red)}
+.calc-go{
+  padding:14px 20px;border-radius:12px;
+  background:var(--red);color:#fff;
+  font-size:18px;font-weight:700;border:none;cursor:pointer;
+  white-space:nowrap;flex-shrink:0;
+  -webkit-tap-highlight-color:transparent;
+}
+.calc-go:active{background:var(--red-d)}
+
+/* Quick amounts - big touchable */
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:14px}
+.qbtn{
+  padding:12px 4px;border-radius:10px;
+  border:1px solid var(--border2);background:var(--surface);
+  font-size:13px;font-weight:600;color:var(--muted);
+  cursor:pointer;text-align:center;
+  -webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;
+  transition:background .1s,color .1s;
+}
+.qbtn:active{background:var(--red-l);color:var(--red)}
+
+.hist-wrap{max-height:220px;overflow-y:auto;margin-bottom:12px;-webkit-overflow-scrolling:touch}
+.hist-item{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 12px;border-radius:10px;margin-bottom:5px;
+  background:var(--surface);
+}
+.hist-name{font-size:14px;color:var(--text);flex:1;margin-right:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-price{font-size:14px;font-weight:700;color:var(--text);white-space:nowrap}
+.hist-del{
+  background:none;border:none;color:var(--faint);
+  font-size:18px;padding:2px 6px;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.hist-del:active{color:var(--red)}
+.calc-empty{text-align:center;padding:20px;color:var(--faint);font-size:14px}
+
+.c-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.cact{
+  padding:13px;border-radius:12px;
+  border:1px solid var(--border2);background:transparent;
+  font-size:14px;font-weight:600;color:var(--muted);
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:background .1s;
+}
+.cact:active{background:var(--surface)}
+.cact.danger:active{background:var(--red-l);color:var(--red)}
+
+/* ── RECIPES ── */
+.rcard{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;overflow:hidden}
+.rhead{display:flex;align-items:center;gap:10px;padding:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;-webkit-user-select:none}
+.rhead:active{background:var(--surface)}
+.rday{background:var(--red);color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:4px 10px;border-radius:99px;flex-shrink:0}
+.rprev{font-size:14px;color:var(--muted);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rchev{color:var(--faint);font-size:18px;transition:transform .2s;flex-shrink:0}
+.rchev.open{transform:rotate(180deg)}
+.rbody{display:none;border-top:1px solid var(--border);padding:14px;gap:12px;flex-direction:column}
+.rbody.open{display:flex}
+.mtime{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin-bottom:3px}
+.mdesc{font-size:14px;color:var(--text);line-height:1.6}
+.msep{border:none;border-top:1px solid var(--border);margin:4px 0}
+
+/* ── HELPER CLASSES ── */
+.sec-lbl{font-size:11px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;margin:0 0 8px}
+.empty{text-align:center;padding:2rem;color:var(--faint);font-size:14px}
+</style>
+</head>
+<body>
+
+<!-- HERO HEADER -->
+<div class="hero">
+  <div class="h-label">Lista semanal · 2 personas</div>
+  <div class="h-title">Mercado <span>D1</span></div>
+  <div class="h-sub" id="hdate">Loma de los Bernal, Medellín</div>
+
+  <div class="budget">
+    <div class="b-row">
+      <div class="b-amount"><small>Total lista</small><span id="b-spent">$0</span></div>
+      <div class="b-limit">Presupuesto<strong>$350.000</strong></div>
+    </div>
+    <div class="bar-bg"><div class="bar" id="bar" style="width:0%"></div></div>
+    <div class="b-foot">
+      <span id="b-pct">0% usado</span>
+      <span class="b-rem" id="b-rem">$350.000 restantes</span>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="scard"><div class="scard-lbl">Total</div><div class="scard-val" id="sc-tot">37</div><div class="scard-sub">artículos</div></div>
+  <div class="scard"><div class="scard-lbl">Listo ✓</div><div class="scard-val" id="sc-done">0</div><div class="scard-sub">comprados</div></div>
+  <div class="scard"><div class="scard-lbl">Carrito</div><div class="scard-val" id="sc-calc">$0</div><div class="scard-sub" id="sc-calc-n">0 ítems</div></div>
+</div>
+
+<!-- PAGES -->
+<!-- LISTA -->
+<div class="page active" id="p-lista">
+  <div id="filter-tabs" style="display:flex;gap:6px;overflow-x:auto;padding:4px 0 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch">
+    <button class="qbtn active" style="white-space:nowrap;padding:8px 14px;border-radius:99px;color:var(--red);border-color:var(--red)" onclick="setFilter(this,'todos')">Todos</button>
+    <button class="qbtn" style="white-space:nowrap;padding:8px 14px;border-radius:99px" onclick="setFilter(this,'aseo')">🧹 Aseo</button>
+    <button class="qbtn" style="white-space:nowrap;padding:8px 14px;border-radius:99px" onclick="setFilter(this,'despensa')">🥫 Despensa</button>
+    <button class="qbtn" style="white-space:nowrap;padding:8px 14px;border-radius:99px" onclick="setFilter(this,'frescos')">🥦 Frescos</button>
+  </div>
+  <div id="items-area"></div>
+
+  <div class="add-card" style="margin-top:20px">
+    <div class="add-card-title">+ Agregar artículo</div>
+    <div class="frow">
+      <div class="fld"><label>Nombre</label><input id="i-name" placeholder="Ej. Arroz Diana..." autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false"></div>
+      <div class="fld"><label>Precio</label><input id="i-price" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="0"></div>
+    </div>
+    <div class="frow2" style="margin-bottom:10px">
+      <div class="fld"><label>Categoría</label>
+        <select id="i-cat">
+          <option value="aseo">🧹 Aseo</option>
+          <option value="despensa">🥫 Despensa</option>
+          <option value="frescos">🥦 Frescos</option>
+        </select>
+      </div>
+      <div class="fld" style="justify-content:flex-end"><label>&nbsp;</label><button class="abtn" onclick="addItem()">Agregar</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- CALCULADORA -->
+<div class="page" id="p-calc">
+  <div class="calc-display">
+    <div class="cd-lbl">Total en carrito</div>
+    <div class="cd-total" id="cd-val">$0</div>
+    <div class="cd-row">
+      <div class="cd-item"><span>Presupuesto</span><strong>$350.000</strong></div>
+      <div class="cd-item"><span>Lista base</span><strong id="cd-list">$0</strong></div>
+      <div class="cd-item rem"><span>Disponible</span><strong id="cd-rem">$350.000</strong></div>
+    </div>
+  </div>
+
+  <input class="calc-name" id="c-name" placeholder="Nombre del artículo (opcional)" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="words">
+  <div class="calc-row">
+    <input class="calc-input" id="c-price" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="Precio $">
+    <button class="calc-go" onclick="calcAdd()">+ Sumar</button>
+  </div>
+
+  <div class="sec-lbl">Accesos rápidos</div>
+  <div class="quick-grid">
+    <button class="qbtn" onclick="calcQuick(1000)">$1.000</button>
+    <button class="qbtn" onclick="calcQuick(2000)">$2.000</button>
+    <button class="qbtn" onclick="calcQuick(3000)">$3.000</button>
+    <button class="qbtn" onclick="calcQuick(5000)">$5.000</button>
+    <button class="qbtn" onclick="calcQuick(7000)">$7.000</button>
+    <button class="qbtn" onclick="calcQuick(10000)">$10.000</button>
+    <button class="qbtn" onclick="calcQuick(15000)">$15.000</button>
+    <button class="qbtn" onclick="calcQuick(20000)">$20.000</button>
+  </div>
+
+  <div class="sec-lbl">Historial</div>
+  <div class="hist-wrap" id="calc-hist">
+    <div class="calc-empty">Agrega artículos para ver el historial</div>
+  </div>
+
+  <div class="c-actions">
+    <button class="cact" onclick="calcUndo()">↩ Deshacer</button>
+    <button class="cact danger" onclick="calcClear()">🗑 Limpiar todo</button>
+  </div>
+</div>
+
+<!-- RECETARIO -->
+<div class="page" id="p-rec">
+  <div id="rec-area"></div>
+</div>
+
+<!-- BOTTOM NAV (iOS style) -->
+<div class="bottom-nav">
+  <button class="nav-btn active" id="nav-lista" onclick="navTo('lista')">
+    <span class="nav-icon">📋</span>
+    <span class="nav-label">Lista</span>
+  </button>
+  <button class="nav-btn" id="nav-calc" onclick="navTo('calc')">
+    <span class="nav-icon">🧮</span>
+    <span class="nav-label">Calculadora</span>
+  </button>
+  <button class="nav-btn" id="nav-rec" onclick="navTo('rec')">
+    <span class="nav-icon">🍳</span>
+    <span class="nav-label">Recetario</span>
+  </button>
+</div>
+
+<script>
+const BUDGET=350000;
+let uid=50,filter='todos',calcItems=[];
+
+let items=[
+  // ASEO
+  {id:1,name:'Papel higiénico Rendy x4 rollos',cat:'aseo',price:4900,checked:false},
+  {id:2,name:'Pañitos húmedos (x80)',cat:'aseo',price:9500,checked:false},
+  {id:3,name:'Jabón líquido de manos 500ml',cat:'aseo',price:5900,checked:false},
+  {id:4,name:'Jabón de baño x3',cat:'aseo',price:7500,checked:false},
+  {id:5,name:'Shampoo Caprice 400ml',cat:'aseo',price:9900,checked:false},
+  {id:6,name:'Crema dental Colgate x2',cat:'aseo',price:6900,checked:false},
+  {id:7,name:'Desodorante x2',cat:'aseo',price:9800,checked:false},
+  {id:8,name:'Detergente Bonaropa polvo 1kg',cat:'aseo',price:4570,checked:false},
+  {id:9,name:'Suavizante de ropa 1L',cat:'aseo',price:6300,checked:false},
+  {id:10,name:'Limpiapisos 1L',cat:'aseo',price:4450,checked:false},
+  {id:11,name:'Esponjas de cocina x2',cat:'aseo',price:3200,checked:false},
+  {id:12,name:'Bolsas de basura x20',cat:'aseo',price:3900,checked:false},
+  // DESPENSA
+  {id:13,name:'Aceite vegetal 500ml',cat:'despensa',price:8200,checked:false},
+  {id:14,name:'Arroz económico Diana 2kg',cat:'despensa',price:7000,checked:false},
+  {id:15,name:'Frijoles 500g',cat:'despensa',price:4800,checked:false},
+  {id:16,name:'Lentejas 500g',cat:'despensa',price:4200,checked:false},
+  {id:17,name:'Espagueti x2 paquetes 500g',cat:'despensa',price:4700,checked:false},
+  {id:18,name:'Salsa de tomate 350g',cat:'despensa',price:3900,checked:false},
+  {id:19,name:'Atún Bary x3 latas 160g',cat:'despensa',price:9300,checked:false},
+  {id:20,name:'Café Águila Roja 125g',cat:'despensa',price:5900,checked:false},
+  {id:21,name:'Azúcar 1kg',cat:'despensa',price:3800,checked:false},
+  {id:22,name:'Sal 1kg',cat:'despensa',price:1900,checked:false},
+  {id:23,name:'Avena 500g',cat:'despensa',price:4200,checked:false},
+  {id:24,name:'Panela 500g',cat:'despensa',price:3400,checked:false},
+  {id:25,name:'Caldo de pollo x6 cubos',cat:'despensa',price:3100,checked:false},
+  // FRESCOS
+  {id:26,name:'Leche Latti bolsa 900ml x4',cat:'frescos',price:11960,checked:false},
+  {id:27,name:'Huevos Sol Naciente x12',cat:'frescos',price:6500,checked:false},
+  {id:28,name:'Muslos de pollo Brasset 800g',cat:'frescos',price:9750,checked:false},
+  {id:29,name:'Carne molida 500g',cat:'frescos',price:12500,checked:false},
+  {id:30,name:'Papa capira 2.5kg',cat:'frescos',price:9150,checked:false},
+  {id:31,name:'Cebolla larga + cabezona',cat:'frescos',price:3800,checked:false},
+  {id:32,name:'Tomate chonto 1kg',cat:'frescos',price:4800,checked:false},
+  {id:33,name:'Ajo y cilantro',cat:'frescos',price:2900,checked:false},
+  {id:34,name:'Plátano maduro x6',cat:'frescos',price:3900,checked:false},
+  {id:35,name:'Zanahoria 1kg',cat:'frescos',price:3400,checked:false},
+  {id:36,name:'Pan tajado',cat:'frescos',price:5200,checked:false},
+  {id:37,name:'Queso campesino 250g',cat:'frescos',price:7900,checked:false},
+];
+
+const recipes=[
+  {day:'Lunes',prev:'Arroz con pollo y frijoles',meals:{Desayuno:'Avena con leche y panela · café',Almuerzo:'Arroz, frijoles, pollo asado y ensalada de tomate con cilantro',Cena:'Huevos revueltos con queso y pan tajado'}},
+  {day:'Martes',prev:'Sopa de lentejas',meals:{Desayuno:'Café con leche y pan',Almuerzo:'Sopa de lentejas con papa y zanahoria · arroz aparte',Cena:'Espagueti con salsa de tomate y atún'}},
+  {day:'Miércoles',prev:'Carne molida guisada',meals:{Desayuno:'Avena con panela · café',Almuerzo:'Arroz, carne molida guisada, papa salada y plátano frito',Cena:'Huevos fritos con arroz y ensalada de zanahoria'}},
+  {day:'Jueves',prev:'Sopa de pollo',meals:{Desayuno:'Pan con queso + café con leche',Almuerzo:'Sopa de pollo con papa, zanahoria y cilantro · arroz aparte',Cena:'Atún con arroz y ensalada de tomate'}},
+  {day:'Viernes',prev:'Frijoles con plátano',meals:{Desayuno:'Avena con leche · café',Almuerzo:'Arroz, frijoles, plátano frito y ensalada de tomate',Cena:'Espagueti con carne molida y salsa de tomate'}},
+  {day:'Sábado',prev:'Sancocho de pollo',meals:{Desayuno:'Huevos revueltos, pan con queso y café',Almuerzo:'Sancocho de pollo con papa, zanahoria y plátano',Cena:'Arroz con huevo frito y ensalada'}},
+  {day:'Domingo',prev:'Frijoles dominicales',meals:{Desayuno:'Avena con panela y leche · café',Almuerzo:'Frijoles, carne molida, arroz y plátano maduro',Cena:'Sopa de pasta con zanahoria y caldo de pollo'}},
+];
+
+function cop(n){return '$'+Math.round(n).toLocaleString('es-CO')}
+function listTotal(){return items.reduce((s,i)=>s+i.price,0)}
+function calcTotal(){return calcItems.reduce((s,i)=>s+i.price,0)}
+
+function updateAll(){
+  const lt=listTotal(),ct=calcTotal();
+  const pct=Math.min(lt/BUDGET*100,100);
+  const rem=BUDGET-lt;
+  const avail=BUDGET-lt-ct;
+  const done=items.filter(i=>i.checked).length;
+
+  // hero budget
+  document.getElementById('b-spent').textContent=cop(lt);
+  const bar=document.getElementById('bar');
+  bar.style.width=pct+'%';
+  bar.className='bar'+(pct>100?' over':pct>80?' warn':'');
+  document.getElementById('b-pct').textContent=Math.round(pct)+'% usado';
+  const remEl=document.getElementById('b-rem');
+  remEl.textContent=cop(Math.abs(rem))+(rem<0?' sobre presupuesto':' restantes');
+  remEl.className='b-rem'+(rem<0?' over':rem<50000?' warn':'');
+
+  // stats
+  document.getElementById('sc-tot').textContent=items.length;
+  document.getElementById('sc-done').textContent=done;
+  document.getElementById('sc-calc').textContent=cop(ct);
+  document.getElementById('sc-calc-n').textContent=calcItems.length+' ítems';
+
+  // calc display
+  document.getElementById('cd-val').textContent=cop(ct);
+  document.getElementById('cd-list').textContent=cop(lt);
+  const cdRem=document.getElementById('cd-rem');
+  cdRem.textContent=cop(Math.abs(avail));
+  cdRem.className=avail<0?'over':avail<50000?'warn':'';
+
+  renderItems();
+  renderCalcHist();
+}
+
+function renderItems(){
+  const area=document.getElementById('items-area');
+  const cats=['aseo','despensa','frescos'];
+  const meta={
+    aseo:{label:'Aseo del hogar',icon:'🧹',bg:'#DBEAFE'},
+    despensa:{label:'Despensa',icon:'🥫',bg:'#FEF3C7'},
+    frescos:{label:'Frescos y proteínas',icon:'🥦',bg:'#DCFCE7'}
+  };
+  const show=filter==='todos'?cats:[filter];
+  let html='';
+  show.forEach(cat=>{
+    const ci=items.filter(i=>i.cat===cat);
+    if(!ci.length)return;
+    const m=meta[cat],tot=ci.reduce((s,i)=>s+i.price,0);
+    html+=`<div class="sec-head">
+      <div class="sec-ico" style="background:${m.bg}">${m.icon}</div>
+      <span class="sec-name">${m.label}</span>
+      <span class="sec-tot">${cop(tot)}</span>
+    </div>`;
+    ci.forEach(item=>{
+      html+=`<div class="item${item.checked?' done':''}">
+        <div class="chk${item.checked?' on':''}" onclick="toggle(${item.id})"></div>
+        <div class="iname">${item.name}</div>
+        <div class="iprice">${cop(item.price)}</div>
+        <button class="del-btn" onclick="delItem(${item.id})">×</button>
+      </div>`;
+    });
+  });
+  if(!html)html='<div class="empty">No hay artículos aquí</div>';
+  area.innerHTML=html;
+}
+
+function renderCalcHist(){
+  const el=document.getElementById('calc-hist');
+  if(!calcItems.length){el.innerHTML='<div class="calc-empty">Agrega artículos para ver el historial</div>';return;}
+  el.innerHTML=calcItems.slice().reverse().map((ci,ri)=>{
+    const idx=calcItems.length-1-ri;
+    return `<div class="hist-item">
+      <span class="hist-name">${ci.name||'Artículo'}</span>
+      <span class="hist-price">${cop(ci.price)}</span>
+      <button class="hist-del" onclick="calcRemove(${idx})">×</button>
+    </div>`;
+  }).join('');
+}
+
+function renderRecipes(){
+  document.getElementById('rec-area').innerHTML=recipes.map((r,i)=>{
+    const meals=Object.entries(r.meals).map(([t,d],j)=>
+      (j>0?'<hr class="msep">':'')+`<div><div class="mtime">${t}</div><div class="mdesc">${d}</div></div>`
+    ).join('');
+    return `<div class="rcard">
+      <div class="rhead" onclick="toggleRec(${i})">
+        <span class="rday">${r.day}</span>
+        <span class="rprev">${r.prev}</span>
+        <span class="rchev" id="ch-${i}">⌄</span>
+      </div>
+      <div class="rbody" id="rb-${i}">${meals}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggle(id){const it=items.find(i=>i.id===id);if(it){it.checked=!it.checked;updateAll()}}
+function delItem(id){items=items.filter(i=>i.id!==id);updateAll()}
+
+function addItem(){
+  const name=document.getElementById('i-name').value.trim();
+  const price=parseInt(document.getElementById('i-price').value)||0;
+  const cat=document.getElementById('i-cat').value;
+  if(!name){document.getElementById('i-name').focus();return}
+  items.push({id:uid++,name,cat,price,checked:false});
+  document.getElementById('i-name').value='';
+  document.getElementById('i-price').value='';
+  document.getElementById('i-name').focus();
+  updateAll();
+}
+
+function calcAdd(){
+  const price=parseInt(document.getElementById('c-price').value)||0;
+  if(!price){document.getElementById('c-price').focus();return}
+  const name=document.getElementById('c-name').value.trim()||'Artículo';
+  calcItems.push({name,price});
+  document.getElementById('c-price').value='';
+  document.getElementById('c-name').value='';
+  document.getElementById('c-price').focus();
+  updateAll();
+}
+function calcQuick(p){calcItems.push({name:cop(p),price:p});updateAll()}
+function calcRemove(i){calcItems.splice(i,1);updateAll()}
+function calcUndo(){if(calcItems.length){calcItems.pop();updateAll()}}
+function calcClear(){if(confirm('¿Limpiar el historial de la calculadora?')){calcItems=[];updateAll()}}
+
+function toggleRec(i){
+  document.getElementById('rb-'+i).classList.toggle('open');
+  document.getElementById('ch-'+i).classList.toggle('open');
+}
+
+function setFilter(btn,f){
+  document.querySelectorAll('#filter-tabs button').forEach(b=>{
+    b.classList.remove('active');
+    b.style.color='';b.style.borderColor='';
+  });
+  btn.classList.add('active');
+  btn.style.color='var(--red)';btn.style.borderColor='var(--red)';
+  filter=f;
+  renderItems();
+}
+
+function navTo(tab){
+  ['lista','calc','rec'].forEach(t=>{
+    document.getElementById('p-'+t).classList.remove('active');
+    document.getElementById('nav-'+t).classList.remove('active');
+  });
+  document.getElementById('p-'+tab).classList.add('active');
+  document.getElementById('nav-'+tab).classList.add('active');
+  if(tab==='calc'){
+    setTimeout(()=>document.getElementById('c-price').focus(),100);
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// iOS: prevent double-tap zoom on buttons
+document.addEventListener('touchend',e=>{
+  if(e.target.tagName==='BUTTON'||e.target.closest('button')){
+    e.preventDefault();
+    (e.target.closest('button')||e.target).click();
+  }},{passive:false});
+
+// Date
+const now=new Date();
+document.getElementById('hdate').textContent=
+  now.toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'});
+
+renderRecipes();
+updateAll();
+</script>
+</body>
+</html>
